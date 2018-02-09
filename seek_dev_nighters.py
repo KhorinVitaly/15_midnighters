@@ -8,7 +8,8 @@ NIGHT_HOURS_END = 6
 
 
 def load_attempts():
-    first_page_content = load_page_content(1)
+    first_page_number = 1
+    first_page_content = load_page_content(first_page_number)
     if first_page_content:
         pages = first_page_content['number_of_pages']
     else:
@@ -39,10 +40,10 @@ if __name__ == '__main__':
         midnighters = get_midnighters()
         if midnighters:
             print('Devman has midnighters:')
-            for username in midnighters:
-                print(username)
         else:
             print('Devman does not have midnighters')
+        for username in midnighters:
+            print(username)
     except requests.HTTPError as error:
         print('HTTP Error!')
         print('Response is: {0}'.format(error.response.content))

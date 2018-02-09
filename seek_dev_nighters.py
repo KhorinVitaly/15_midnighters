@@ -35,11 +35,11 @@ def load_page_content(page):
     return requests.get(URL, params={'page': page}).json()
 
 
-if __name__ == '__main__':
+def print_midnighters():
     try:
         midnighters = get_midnighters()
         if midnighters:
-            print('Devman has midnighters:')
+            print('Devman midnighters:')
         else:
             print('Devman does not have midnighters')
         for username in midnighters:
@@ -50,3 +50,6 @@ if __name__ == '__main__':
     except requests.ConnectionError:
         print('Connection failed!')
 
+
+if __name__ == '__main__':
+    print_midnighters()

@@ -4,7 +4,7 @@ This script for Devman's student. If you can look in terminal who of your collea
 this script.
 
 
-#How to Install
+# How to Install
 
 Python 3 should be already installed. Then use pip (or pip3 if there is a conflict with old Python 2 setup) to install
 dependencies:
@@ -12,18 +12,19 @@ dependencies:
 ```
 pip install -r requirements.txt # alternatively try pip3
 ```
+Remember, it is recommended to use virtualenv/venv for better isolation.
 
-#Quickstart
+# Quickstart
 
 Just launch seek_dev_nighters.py in terminal 
 
 ```
+python seek_dev_nighters.py
 Devman has midnighters:
 id197089895
 jewta94
 linuxoid69
 ```
-Remember, it is recommended to use virtualenv/venv for better isolation.
 
 # Project Goals
 

@@ -2,54 +2,53 @@ import requests
 from pytz import timezone
 from datetime import datetime
 
-URL = 'https://devman.org/api/challenges/solution_attempts/'
-NIGHT_HOURS_START = 0
-NIGHT_HOURS_END = 6
-
 
 def load_attempts():
-    first_page_number = 1
-    first_page_content = load_page_content(first_page_number)
-    if first_page_content:
-        pages = first_page_content['number_of_pages']
-    else:
-        return []
-    for page in range(1, pages):
-        for record in load_page_content(page)['records']:
+    page_number = 1
+    while True:
+        page_content = load_page_content(page_number)
+        if not page_content:
+            break
+        for record in page_content['records']:
             yield record
+        page_number += 1
 
 
-def get_midnighters():
-    midnighters = []
-    for attempt in load_attempts():
-        if attempt['timestamp']:
-            attempt_date = datetime.fromtimestamp(float(attempt['timestamp']))
-            hour_of_attempt = timezone(attempt['timezone']).fromutc(attempt_date).hour
-            if hour_of_attempt >= NIGHT_HOURS_START and hour_of_attempt < NIGHT_HOURS_END:
-                attempt['time'] = str(hour_of_attempt)
-                midnighters.append(attempt['username'])
-    return set(midnighters)
+def get_midnighters(attempts):
+    night_hours_start = 0
+    night_hours_end = 6
+    midnighters = set()
+    for attempt in attempts:
+        attempt_date = datetime.fromtimestamp(attempt['timestamp'])
+        hour_of_attempt = timezone(attempt['timezone']).fromutc(attempt_date).hour
+        if (night_hours_start <= hour_of_attempt < night_hours_end):
+            midnighters.add(attempt['username'])
+    return midnighters
 
 
 def load_page_content(page):
-    return requests.get(URL, params={'page': page}).json()
+    url = 'https://devman.org/api/challenges/solution_attempts/'
+    response = requests.get(url, params={'page': page})
+    if response:
+        return response.json()
 
 
-def print_midnighters():
+def print_midnighters(midnighters):
+    if midnighters:
+        print('Devman midnighters:')
+    else:
+        print('Devman does not have midnighters')
+    for username in midnighters:
+        print(username)
+
+
+if __name__ == '__main__':
     try:
-        midnighters = get_midnighters()
-        if midnighters:
-            print('Devman midnighters:')
-        else:
-            print('Devman does not have midnighters')
-        for username in midnighters:
-            print(username)
+        midnighters = get_midnighters(load_attempts())
+        print_midnighters(midnighters)
     except requests.HTTPError as error:
         print('HTTP Error!')
         print('Response is: {0}'.format(error.response.content))
     except requests.ConnectionError:
         print('Connection failed!')
 
-
-if __name__ == '__main__':
-    print_midnighters()

@@ -19,8 +19,7 @@ def get_midnighters(attempts):
     night_hours_end = 6
     midnighters = set()
     for attempt in attempts:
-        attempt_date = datetime.fromtimestamp(attempt['timestamp'])
-        hour_of_attempt = timezone(attempt['timezone']).fromutc(attempt_date).hour
+        hour_of_attempt = datetime.fromtimestamp(attempt['timestamp'], timezone(attempt['timezone'])).hour
         if (night_hours_start <= hour_of_attempt < night_hours_end):
             midnighters.add(attempt['username'])
     return midnighters
@@ -34,10 +33,7 @@ def load_page_content(page):
 
 
 def print_midnighters(midnighters):
-    if midnighters:
-        print('Devman midnighters:')
-    else:
-        print('Devman does not have midnighters')
+    print('Devman midnighters:')
     for username in midnighters:
         print(username)
 
@@ -45,10 +41,12 @@ def print_midnighters(midnighters):
 if __name__ == '__main__':
     try:
         midnighters = get_midnighters(load_attempts())
-        print_midnighters(midnighters)
     except requests.HTTPError as error:
         print('HTTP Error!')
         print('Response is: {0}'.format(error.response.content))
     except requests.ConnectionError:
         print('Connection failed!')
-
+    if midnighters:
+        print_midnighters(midnighters)
+    else:
+        print('Devman does not have midnighters')
